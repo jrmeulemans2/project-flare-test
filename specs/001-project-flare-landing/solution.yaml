@@ -2,7 +2,7 @@ project: Project Flare
 owner: Marketing_DevOps
 metadata:
   environment: production
-  region: westus  # Matches Constitution
+  region: eastus  # Matches Constitution
   sla: "99.9"
 components:
   web_hosting: Azure Storage Static Website
