@@ -1,11 +1,31 @@
 # Matches solution.yaml: Azure Storage Static Website + Azure Front Door (East US)
+# Security: see security.md — HTTPS + TLS 1.2, WAF, Managed Identity + Storage restriction
 resources:
   - name: stflareprod001
     type: azurerm_storage_account
     location: eastus   # Constitution II
     tier: Standard
     replication: LRS
+    # Enterprise: restrict to Front Door only; no public blob access (security.md §3)
+    allow_nested_items_to_be_public: false
+    # network_rules: allow only Azure trusted services / Front Door (Terraform: azurerm_storage_account_network_rules or default_action Deny + bypass)
   - name: cdn-flare-prod
     type: azurerm_cdn_frontdoor_profile
     location: eastus   # Constitution II
     sku_name: Standard_AzureFrontDoor
+    # Enterprise: HTTPS only, minimum TLS 1.2 (security.md §1); Managed Identity for origin (security.md §3)
+    # Terraform: frontend_endpoint accepted_protocols ["Https"], minimum_tls_version 1.2; identity { type = "SystemAssigned" }; origin with managed_identity auth
+  - name: waf-flare-prod
+    type: azurerm_cdn_frontdoor_firewall_policy
+    location: eastus
+    # Enterprise: WAF on Front Door (security.md §2)
+    sku_name: Standard_AzureFrontDoor
+    mode: Prevention
+    # managed_rule blocks (e.g. Microsoft_DefaultRuleSet) and optional custom rules
+  - name: waf-flare-prod-security-policy
+    type: azurerm_cdn_frontdoor_security_policy
+    # Links waf-flare-prod to cdn-flare-prod and applies to endpoint/route (e.g. /*)
+security:
+  - https_enforcement_and_minimum_tls_1_2   # Front Door: HTTPS only, TLS >= 1.2
+  - waf_policy_on_front_door                # Firewall + security policy on profile
+  - managed_identity_and_storage_restriction # Front Door MI → Storage; Storage firewall
