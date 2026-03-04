@@ -1,0 +1,11 @@
+# Matches solution.yaml: Azure Storage Static Website + Azure Front Door (East US)
+resources:
+  - name: stflareprod001
+    type: azurerm_storage_account
+    location: eastus   # Constitution II
+    tier: Standard
+    replication: LRS
+  - name: cdn-flare-prod
+    type: azurerm_cdn_frontdoor_profile
+    location: eastus   # Constitution II
+    sku_name: Standard_AzureFrontDoor
