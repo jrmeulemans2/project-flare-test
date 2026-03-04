@@ -1,0 +1,70 @@
+# Constitution compliance: ensure every spec folder has solution.yaml with region=eastus (Principle II).
+# Triggers on PR; uses yamllint for YAML linting and validates region field.
+name: Solution YAML compliance
+
+on:
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  solution-yaml-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install yamllint and PyYAML
+        run: pip install yamllint pyyaml
+
+      - name: Ensure solution.yaml exists in every spec folder
+        run: |
+          shopt -s nullglob
+          dirs=(specs/*/)
+          if [[ ${#dirs[@]} -eq 0 ]]; then
+            echo "No spec folders under specs/; nothing to validate."
+            exit 0
+          fi
+          missing=0
+          for dir in "${dirs[@]}"; do
+            f="${dir}solution.yaml"
+            if [[ ! -f "$f" ]]; then
+              echo "::error file=$f::solution.yaml is required in every spec folder (Constitution traceability)."
+              missing=1
+            fi
+          done
+          [[ $missing -eq 0 ]] || exit 1
+
+      - name: Lint solution.yaml files with yamllint
+        run: |
+          shopt -s nullglob
+          for f in specs/*/solution.yaml; do
+            echo "Linting $f"
+            yamllint "$f" || exit 1
+          done
+
+      - name: Validate metadata.region is eastus (Constitution II)
+        run: |
+          python3 << 'EOF'
+          import yaml
+          import sys
+          from pathlib import Path
+          errors = []
+          for path in sorted(Path("specs").glob("*/solution.yaml")):
+            if not path.is_file():
+              continue
+            with open(path) as f:
+                data = yaml.safe_load(f)
+            region = (data or {}).get("metadata", {}).get("region")
+            if region != "eastus":
+                msg = f"{path}: metadata.region must be 'eastus' (Constitution II), got {repr(region)}"
+                errors.append(msg)
+                print(f"::error file={path}::{msg}")
+          if errors:
+              sys.exit(1)
+          print("All solution.yaml files have metadata.region = eastus.")
+          EOF
