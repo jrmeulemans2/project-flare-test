@@ -1,4 +1,4 @@
-﻿---
+---
 description: Project Development Guidelines
 globs: ["**/*"]
 alwaysApply: true
@@ -8,6 +8,8 @@ alwaysApply: true
 Auto-generated from all feature plans. Last updated: 2026-03-03
 
 ## Active Technologies
+- HTML5, CSS3 (static assets; no runtime language required) + None (static files only) (001-project-flare-landing)
+- Azure Storage Account $web container (static website); no database (001-project-flare-landing)
 
 - HTML5, CSS3 (static assets; no runtime language required) + Azure Storage Account (static website), Azure Front Door (001-project-flare-landing)
 
@@ -28,6 +30,7 @@ tests/
 HTML5, CSS3 (static assets; no runtime language required): Follow standard conventions
 
 ## Recent Changes
+- 001-project-flare-landing: Added HTML5, CSS3 (static assets; no runtime language required) + None (static files only)
 
 - 001-project-flare-landing: Added HTML5, CSS3 (static assets; no runtime language required) + Azure Storage Account (static website), Azure Front Door
 
