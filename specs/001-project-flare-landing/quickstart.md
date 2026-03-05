@@ -1,7 +1,7 @@
 # Quickstart: Project Flare Static Landing Page
 
 **Feature**: 001-project-flare-landing  
-**Architecture**: Azure Front Door → Azure Storage Account (static website), East US, Terraform IaC.
+**Architecture**: Azure Front Door → Azure Storage Account (static website), East US, Terraform IaC. Log Analytics Workspace for Front Door and Storage diagnostic logs (see [spec.md § Diagnostic Settings](./spec.md)).
 
 ## Prerequisites
 
@@ -29,7 +29,7 @@ From repository root:
 ```bash
 cd terraform
 terraform init
-terraform plan   # Review: Storage Account + Front Door, East US
+terraform plan   # Review: Storage, Front Door, Log Analytics Workspace, Diagnostic Settings (East US)
 terraform apply  # Confirm with yes
 ```
 
@@ -55,6 +55,7 @@ In Terraform (or Portal): Front Door origin should point at the Storage static w
 2. Confirm Project Flare name and primary message (spec acceptance).
 3. Confirm connection is HTTPS (padlock / spec SC-002).
 4. Optional: Check that the Storage website URL is not required for normal users (they use Front Door only).
+5. Optional: In Azure Portal → Log Analytics workspace → Logs, query Front Door access or Storage blob logs to confirm diagnostic data is flowing.
 
 ## 6. Tear Down
 

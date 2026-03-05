@@ -8,3 +8,7 @@ components:
   web_hosting: Azure Storage Static Website
   cdn: Azure Front Door
   security: Managed Identity
+Security_features:
+  - https_enforcement_and_minimum_tls_1_2
+  - waf_policy_on_front_door
+  - managed_identity_and_storage_restriction

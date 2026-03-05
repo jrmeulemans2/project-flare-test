@@ -90,3 +90,25 @@ To make the project **Enterprise Ready**, three specific Azure security configur
 ---
 
 **Summary**: The three Enterprise-ready configurations added to infrastructure are: **(1) HTTPS enforcement + minimum TLS 1.2**, **(2) WAF policy on Front Door**, **(3) Managed Identity for origin access + Storage restricted to Front Door only.** See [security.md](./security.md) and [infrastructure.yaml](./infrastructure.yaml) for the specification and resource list.
+
+---
+
+## 6. Log Analytics Workspace and Diagnostic Settings
+
+**Decision**: Add an **Azure Log Analytics Workspace** (East US) as the single log destination. Define **Diagnostic Settings** for (1) Azure Front Door profile and (2) Storage Account blob service, sending the specified log and metric categories to that workspace.
+
+**Rationale**: Spec requires logs for Front Door traffic and Storage Account access (see [spec.md § Diagnostic Settings](./spec.md)). Log Analytics provides querying, retention, and integration with Azure Monitor without operating a separate logging pipeline. East US matches Constitution II. Single workspace keeps cost and complexity low.
+
+**Front Door (Microsoft.Cdn/profiles)**  
+- **FrontDoorAccessLog**: request/response, client IP, status, URL—traffic visibility.  
+- **FrontDoorHealthProbeLog**: origin health checks.  
+- **FrontDoorWebApplicationFirewallLog**: WAF matches and actions (when WAF is enabled).
+
+**Storage (blob service)**  
+- Target resource: Storage Account **blobServices/default** (not the storage account root).  
+- **StorageRead**, **StorageWrite**, **StorageDelete**: blob access audit (who read/wrote/deleted in $web).  
+- **Transaction**: transaction metrics for capacity and throttling analysis.
+
+**Implementation (Terraform)**: Create `azurerm_log_analytics_workspace` (East US). For Front Door profile and for Storage blob service, create `azurerm_monitor_diagnostic_setting` with `log_analytics_workspace_id` set and the appropriate `enabled_log` / `metric` blocks for the categories above.
+
+**Alternatives considered**: Sending logs to a separate storage account (more retention control but more cost and no built-in querying); Event Hub (useful for SIEM streaming but not required for this scope). Log Analytics chosen for simplicity and built-in KQL/alerting.

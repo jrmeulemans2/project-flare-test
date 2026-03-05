@@ -1,5 +1,6 @@
 # Matches solution.yaml: Azure Storage Static Website + Azure Front Door (East US)
 # Security: see security.md — HTTPS + TLS 1.2, WAF, Managed Identity + Storage restriction
+# Observability: Log Analytics Workspace + Diagnostic Settings (spec.md § Diagnostic Settings, research.md §6)
 resources:
   - name: stflareprod001
     type: azurerm_storage_account
@@ -25,6 +26,18 @@ resources:
   - name: waf-flare-prod-security-policy
     type: azurerm_cdn_frontdoor_security_policy
     # Links waf-flare-prod to cdn-flare-prod and applies to endpoint/route (e.g. /*)
+  - name: law-flare-prod
+    type: azurerm_log_analytics_workspace
+    location: eastus
+    # Central log destination for Front Door and Storage diagnostic settings
+  - name: diag-frontdoor-flare-prod
+    type: azurerm_monitor_diagnostic_setting
+    # Target: cdn-flare-prod (Front Door profile). Destination: law-flare-prod.
+    # Logs: FrontDoorAccessLog, FrontDoorHealthProbeLog, FrontDoorWebApplicationFirewallLog
+  - name: diag-storage-blob-flare-prod
+    type: azurerm_monitor_diagnostic_setting
+    # Target: stflareprod001/blobServices/default. Destination: law-flare-prod.
+    # Logs: StorageRead, StorageWrite, StorageDelete. Metrics: Transaction
 security:
   - https_enforcement_and_minimum_tls_1_2   # Front Door: HTTPS only, TLS >= 1.2
   - waf_policy_on_front_door                # Firewall + security policy on profile

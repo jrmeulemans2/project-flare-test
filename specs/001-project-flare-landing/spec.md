@@ -54,6 +54,18 @@ As a visitor, I access the landing page over a secure connection so that my visi
 - **FR-005**: System MUST allow anyone to view the full landing content without authentication or providing personal information.
 - **FR-006**: System MUST follow security best practices appropriate for a public static page (e.g., secure transport, no unnecessary exposure of sensitive data).
 
+### Diagnostic Settings (Observability)
+
+To support operations, security review, and compliance, the following **Diagnostic Settings** MUST be defined and enabled. All diagnostic data MUST be sent to an **Azure Log Analytics Workspace** (East US, provisioned via Terraform).
+
+| Resource | Log / metric categories to enable | Purpose |
+|----------|-----------------------------------|--------|
+| **Azure Front Door** (profile) | **FrontDoorAccessLog**, **FrontDoorHealthProbeLog**, **FrontDoorWebApplicationFirewallLog** | Traffic (requests, responses, client IP, status), origin health, WAF events. |
+| **Storage Account** (blob service) | **StorageRead**, **StorageWrite**, **StorageDelete**, **Transaction** | Blob access (read/write/delete) and transactions for $web origin access audit. |
+
+- Diagnostic Settings MUST be created via Terraform (`azurerm_monitor_diagnostic_setting`) with destination = Log Analytics Workspace.
+- Logs MUST NOT be enabled to a destination that would store personal data beyond what is strictly necessary (e.g., avoid logging request bodies or unnecessary headers); standard access/WAF/storage log fields are acceptable.
+
 ### Key Entities
 
 - **Landing content**: The information presented on the page—project name (Project Flare), primary message or value proposition, and any supporting copy or structure. No persistent user data or backend storage is required.
