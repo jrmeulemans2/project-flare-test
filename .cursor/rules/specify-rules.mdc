@@ -1,0 +1,39 @@
+---
+description: Project Development Guidelines
+globs: ["**/*"]
+alwaysApply: true
+---
+# project-flare-demo Development Guidelines
+
+Auto-generated from all feature plans. Last updated: 2026-03-03
+
+## Active Technologies
+- HTML5, CSS3 (static assets; no runtime language required) + None (static files only) (001-project-flare-landing)
+- Azure Storage Account $web container (static website); no database (001-project-flare-landing)
+
+- HTML5, CSS3 (static assets; no runtime language required) + Azure Storage Account (static website), Azure Front Door (001-project-flare-landing)
+
+## Project Structure
+
+```text
+backend/
+frontend/
+tests/
+```
+
+## Commands
+
+# Add commands for HTML5, CSS3 (static assets; no runtime language required)
+
+## Code Style
+
+HTML5, CSS3 (static assets; no runtime language required): Follow standard conventions
+
+## Recent Changes
+- 001-project-flare-landing: Added HTML5, CSS3 (static assets; no runtime language required) + None (static files only)
+- 001-project-flare-landing: Added HTML5, CSS3 (static assets; no runtime language required) + None (static files only)
+
+- 001-project-flare-landing: Added HTML5, CSS3 (static assets; no runtime language required) + Azure Storage Account (static website), Azure Front Door
+
+<!-- MANUAL ADDITIONS START -->
+<!-- MANUAL ADDITIONS END -->
